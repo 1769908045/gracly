@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="initial-scale=1.0">
+  <title>Title</title>
+  <style>
+    input{
+      margin-top: 300px;
+      display: block;
+    }
+    input:focus {
+      background-color: #00B8E9;
+    }
+  </style>
+</head>
+<body>
+<div class="sss">
+  <section>
+    <span class="text">
+      <div id="ppp"></div>
+    </span>
+  </section>
+</div>
+<div class="sss">
+   <span class="text">
+     <span>666</span>
+      <div>dsad</div>
+      <div>666</div>
+    </span>
+</div>
+<input type="text">
+<input type="text">
+<input type="text">
+<input type="text">
+<input type="text">
+<input type="text">
+<input
+    type="text"><input type="text">
+<script src="gracly.js"></script>
+<script>
+  mobileInput()
+  scrollEvent([
+    {top:300,fun:()=>console.log(300)},
+    {top:700,fun:()=>console.log(700)},
+    {top:1500,fun:()=>console.log(1500)},
+  ],()=>console.log("end"))
+</script>
+</body>
+</html>

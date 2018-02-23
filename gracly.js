@@ -77,8 +77,7 @@ const cookie = {
   set: (name, value, expires) => {
     if (typeof expires !== "number") {
       document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value)
-    }
-    else {
+    } else {
       let time = new Date()
       time.setTime(time.getTime() + expires)
       document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + "expires=" + time.toUTCString()

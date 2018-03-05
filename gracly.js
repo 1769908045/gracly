@@ -38,13 +38,19 @@ const elInit = a => {
   }
 }
 const getElement = currying_(elFun, elInit)
-const getElements = e => {
-  if (e.substr(0, 1) === "#") {
-    return document.getElementById(e.substr(1))
-  } else if (e.substr(0, 1) === ".") {
-    return document.getElementsByClassName(e.substr(1))
+const query = queryStr => {
+  const args = queryStr.split(' ')
+  let get = null
+  for_(args, (i, k) => k === 0 && (get = getElement(i)) || get(i))
+  return get()
+}
+const querys = queryStr => {
+  if (queryStr.substr(0, 1) === "#") {
+    return document.getElementById(queryStr.substr(1))
+  } else if (queryStr.substr(0, 1) === ".") {
+    return document.getElementsByClassName(queryStr.substr(1))
   } else {
-    return document.getElementsByTagName(e)
+    return document.getElementsByTagName(queryStr)
   }
 }
 const jsonToUrl = obj => {
@@ -71,7 +77,7 @@ const ajax = o => {
   })()
 }
 const checkDevice = () => navigator.userAgent.match(/iPhone|Android|Mobile|iPad|Firefox|opr|chrome|safari|trident/i)[0]
-const mobileDevice = /Android|iPhone|Mobile|iPad/i.test(checkDevice()) ? true : false
+const mobileDevice = /Android|iPhone|Mobile|iPad/i.test(checkDevice())
 const mobileInput = () => mobileDevice && for_(getElements("input"), i => i.onfocus = e => window.scrollTo(0, e.target.offsetTop - (document.documentElement.clientHeight / 3) + 50))
 const cookie = {
   set: (name, value, expires) => {

@@ -5,10 +5,11 @@
   <meta name="viewport" content="initial-scale=1.0">
   <title>Title</title>
   <style>
-    input{
+    input {
       margin-top: 300px;
       display: block;
     }
+
     input:focus {
       background-color: #00B8E9;
     }
@@ -19,6 +20,7 @@
       background-color: white;
     }
   </style>
+  <link rel="stylesheet" href="gracly/gracly.css">
 </head>
 <body>
 <div class="sss">
@@ -48,16 +50,9 @@
 <input type="text">
 <input type="text">
 <input type="text">
-<input
-    type="text"><input type="text">
-<script src="gracly.js"></script>
-<script>
-  mobileInput()
-  scrollEvent([
-    {top:300,fun:()=>console.log(300)},
-    {top:700,fun:()=>console.log(700)},
-    {top:1500,fun:()=>console.log(1500)},
-  ],()=>console.log("end"))
-</script>
+<input type="text">
+<input type="text">
+<div id="demo"></div>
+<script src="gracly/base.js"></script>
 </body>
 </html>

@@ -1,11 +1,11 @@
-const for_ = (list, fun) => {
+export const for_ = (list, fun) => {
   for (let i = 0, len = list.length; i < len; i++) fun(list[i], i)
 }
-const currying_ = (fun, initFun) => {
+export const currying_ = (fun, initFun) => {
   return (...initArgs) => {
     let result = typeof initFun === "function" ? initFun(initArgs[0]) : initArgs[0]
     initArgs.length > 1 && for_(initArgs.slice(1), i => result = fun(result, i))
-    return back = (...args) => {
+    const back = (...args) => {
       if (args.length > 0) {
         for_(args, i => result = fun(result, i))
         return back
@@ -13,13 +13,14 @@ const currying_ = (fun, initFun) => {
         return result
       }
     }
+    return back
   }
 }
-const getIndex = str => {
+export const getIndex = str => {
   let indexStr = str.match(/\[\d+]/)
   return indexStr ? parseInt(indexStr[0].match(/\d+/)[0]) : 0
 }
-const elFun = (a, b) => {
+export const elFun = (a, b) => {
   if (b.substr(0, 1) === "#") {
     return document.getElementById(b.substr(1))
   } else if (b.substr(0, 1) === ".") {
@@ -28,7 +29,7 @@ const elFun = (a, b) => {
     return a.getElementsByTagName(b.replace(/\[\d+]/g, ''))[getIndex(b)]
   }
 }
-const elInit = a => {
+export const elInit = a => {
   if (a.substr(0, 1) === "#") {
     return document.getElementById(a.substr(1))
   } else if (a.substr(0, 1) === ".") {
@@ -37,14 +38,14 @@ const elInit = a => {
     return document.getElementsByTagName(a.replace(/\[\d+]/g, ''))[getIndex(a)]
   }
 }
-const getElement = currying_(elFun, elInit)
-const query = queryStr => {
+export const getElement = currying_(elFun, elInit)
+export const query = queryStr => {
   const args = queryStr.split(' ')
   let get = null
   for_(args, (i, k) => k === 0 && (get = getElement(i)) || get(i))
   return get()
 }
-const querys = queryStr => {
+export const querys = queryStr => {
   if (queryStr.substr(0, 1) === "#") {
     return document.getElementById(queryStr.substr(1))
   } else if (queryStr.substr(0, 1) === ".") {
@@ -53,14 +54,14 @@ const querys = queryStr => {
     return document.getElementsByTagName(queryStr)
   }
 }
-const jsonToUrl = obj => {
+export const jsonToUrl = obj => {
   let data = ""
   for (let k in obj) {
     data += k + "=" + obj[k] + "&"
   }
   return data.substr(0, data.length - 1)
 }
-const ajax = o => {
+export const ajax = o => {
   const method = o.method.toUpperCase()
   const url = o.url
   const async = o.async === false ? o.async : true
@@ -76,10 +77,38 @@ const ajax = o => {
     }
   })()
 }
-const checkDevice = () => navigator.userAgent.match(/iPhone|Android|Mobile|iPad|Firefox|opr|chrome|safari|trident/i)[0]
-const mobileDevice = /Android|iPhone|Mobile|iPad/i.test(checkDevice())
-const mobileInput = () => mobileDevice && for_(getElements("input"), i => i.onfocus = e => window.scrollTo(0, e.target.offsetTop - (document.documentElement.clientHeight / 3) + 50))
-const cookie = {
+export const createHash = input => {
+  const base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-'.split('');
+  let hash = 5381
+  let i = input.length - 1
+  if (typeof input === 'string') {
+    for (; i > -1; i--)
+      hash += (hash << 5) + input.charCodeAt(i)
+  }
+  else {
+    for (; i > -1; i--)
+      hash += (hash << 5) + input[i];
+  }
+  let value = hash & 0x7FFFFFFF
+  let retValue = ''
+  do {
+    retValue += base64[value & 0x3F]
+  }
+  while (value >>= 6)
+
+  return retValue
+}
+export const matchHtml = (tagName, html) => {
+  const regStr = "<" + tagName + ">[\\s\\S]*<\/" + tagName + ">";
+  let targetStr = html.match(new RegExp(regStr))[0];
+  const start = targetStr.search(">");
+  const end = targetStr.search("</" + tagName + ">");
+  return targetStr.substring(start + 1, end);
+}
+export const checkDevice = () => navigator.userAgent.match(/iPhone|Android|Mobile|iPad|Firefox|opr|chrome|safari|trident/i)[0]
+export const mobileDevice = /Android|iPhone|Mobile|iPad/i.test(checkDevice())
+export const mobileInput = () => mobileDevice && for_(querys("input"), i => i.onfocus = e => window.scrollTo(0, e.target.offsetTop - (document.documentElement.clientHeight / 3) + 50))
+export const cookie = {
   set: (name, value, expires) => {
     if (typeof expires !== "number") {
       document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value)
@@ -105,7 +134,7 @@ const cookie = {
     cookie.set(name, "", -1)
   }
 }
-const scrollEvent = (obj, endback) => {
+export const scrollEvent = (obj, endback) => {
   let endTop = document.documentElement.scrollTop || document.body.scrollTop
   for_(obj, i => {
     if (endTop >= i['top']) {
@@ -161,7 +190,7 @@ const scrollEvent = (obj, endback) => {
     }
   }
 }
-const checkWebp = (callback) => {
+export const checkWebp = (callback) => {
   const webp = new Image()
   webp.src = "data:image/webp;base64,UklGRiYAAABXRUJQVlA4IBoAAAAwAQCdASoBAAEAAIAMJaQAA3AA/v89WAAAAA=="
   webp.onload = () => webp.width && callback()

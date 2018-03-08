@@ -1,0 +1,28 @@
+.gra-page button {
+  border: solid 1px #cccccc;
+  cursor: pointer;
+  font-size: 12px;
+  border-radius: 2px;
+  background-color: transparent;
+  color: #333333;
+  margin-left: 5px;
+  margin-right: 5px;
+  width: 30px;
+  height: 30px;
+  outline: none;
+}
+
+.gra-page > .page-button {
+  width: 55px;
+  height: 30px;
+}
+
+.gra-page > .select {
+  color: white;
+  background-color: #00A095;
+  border: solid 1px #00A095;
+}
+
+.gra-page button:hover {
+  border: solid 1px #00A095;
+}

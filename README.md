@@ -7,3 +7,6 @@
 
    * 2018-03-04
       * 改进元素选择器调用形式：query("#demo div span[1] .select")和集合选择器querys(".demo")
+    
+    * 2018-03-13
+        * 优化ajax函数，更新page组件

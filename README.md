@@ -9,7 +9,7 @@
    * 改进元素选择器调用形式：query("#demo div span[1] .select")和集合选择器querys(".demo")
     
 * 2018-03-13
-   * 优化ajax函数，更新page组件
+   * 优化ajax函数，更新page组件    
         
 * 2018-03-27
    * 修复cookie操作bug，scrollEvent增加自定义和重复触发功能

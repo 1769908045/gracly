@@ -109,26 +109,23 @@ const checkDevice = () => navigator.userAgent.match(/iPhone|Android|Mobile|iPad|
 const mobileDevice = /Android|iPhone|Mobile|iPad/i.test(checkDevice())
 const mobileInput = () => mobileDevice && for_(querys('input'), i => i.onfocus = e => window.scrollTo(0, e.target.offsetTop - (document.documentElement.clientHeight / 3) + 50))
 const cookie = {
-  set: (name, value, expires) => {
+  set: (name, value, expires, path = '/') => {
     if (typeof expires !== 'number') {
-      document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value)
+      document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)};path=${path}`
     } else {
       let time = new Date()
       time.setTime(time.getTime() + expires)
-      document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value) + 'expires=' + time.toUTCString()
+      document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)};expires=${time.toUTCString()};path=${path}`
     }
   },
   get: (name) => {
-    const cookies = document.cookie.split(' ')
-    let result = null
-    for (let i = 0, len = cookies.length; i < len; i++) {
-      const obj = cookies[i].split('=')
-      if (decodeURIComponent(obj[0]) === name) {
-        result = decodeURIComponent(obj[1])
-        break
-      }
+    const cookie = document.cookie
+    const rex = new RegExp(`${encodeURIComponent(name)}=[^ ;]+`)
+    if (rex.test(cookie)) {
+      return cookie.match(rex)[0].split('=')[1]
+    } else {
+      return false
     }
-    return result.substr(result.length - 1) === ';' ? result.substr(0, result.length - 1) : result
   },
   delete: (name) => {
     cookie.set(name, '', -1)
@@ -136,12 +133,24 @@ const cookie = {
 }
 const scrollEvent = (obj, endback) => {
   let endTop = document.documentElement.scrollTop || document.body.scrollTop
+  const isDown = top => top > endTop
   for_(obj, i => {
-    if (endTop >= i['top']) {
-      i['fun']()
-      i.tag = false
-    } else
-      i.tag = true
+    if (typeof i.top === 'number') {
+      if (i.down.callback && typeof i.down.callback === 'function') {
+        if (endTop >= i.top) {
+          i.down.callback()
+          i.down.tag = false
+        } else
+          i.down.tag = true
+      }
+      if (i.up.callback && typeof i.up.callback === 'function') {
+        if (endTop <= i.top) {
+          i.up.callback()
+          i.up.tag = false
+        } else
+          i.up.tag = true
+      }
+    }
   })
   if (mobileDevice) {
     document.body.addEventListener('touchmove', e => {
@@ -177,16 +186,23 @@ const scrollEvent = (obj, endback) => {
   } else {
     document.body.onscroll = e => {
       const scrollTop = document.documentElement.scrollTop || document.body.scrollTop
-      if (scrollTop >= endTop) {
-        for_(obj, k => {
-          if (scrollTop >= k.top && k.tag) {
-            k['fun']()
-            k.tag = false
+      for_(obj, k => {
+        if (isDown(scrollTop)) {
+          if (typeof k.top === 'number' && k.down.callback && typeof k.down.callback === 'function' && k.down.tag && scrollTop >= k.top) {
+            k.down.callback()
+            k.down.tag = false
+            k.up.repeat && (k.up.tag = true)
           }
-        })
-        endTop = scrollTop
-      }
+        } else {
+          if (typeof k.top === 'number' && k.up.callback && typeof k.up.callback === 'function' && k.up.tag && scrollTop <= k.top) {
+            k.up.callback()
+            k.up.tag = false
+            k.down.repeat && (k.down.tag = true)
+          }
+        }
+      })
       typeof endback === 'function' && scrollTop >= document.body.clientHeight - document.documentElement.clientHeight && endback()
+      endTop = scrollTop
     }
   }
 }
@@ -195,111 +211,3 @@ const checkWebp = (callback) => {
   webp.src = 'data:image/webp;base64,UklGRiYAAABXRUJQVlA4IBoAAAAwAQCdASoBAAEAAIAMJaQAA3AA/v89WAAAAA=='
   webp.onload = () => webp.width && callback()
 }
-
-class GraPage {
-  constructor(element, data, callBack) {
-    this.container = element
-    this.data = data
-    this.callBack = callBack
-    this.pageNum = Math.ceil(data.total / data.show)
-    this.create()
-  }
-
-  create() {
-    const container = this.container
-    const data = this.data
-    const pageNum = this.pageNum
-    container.innerHTML = '';
-    const first = data.first ? data.first : '首页'
-    const last = data.last ? data.last : '末页'
-    const previous = data.previous ? data.previous : '上一页'
-    const next = data.next ? data.next : '下一页'
-    const showPage = data.showPage ? data.showPage : pageNum > 8 ? 8 : pageNum
-    const className = `class='page-button'`
-    let html = `<button ${className}>${first}</button><button ${className}>${previous}</button>`
-    for (let i = 0; i < showPage; i++) {
-      html += `<button>${i + 1}</button>`
-    }
-    html += `<button ${className}>${next}</button><button ${className}>${last}</button>`
-    container.innerHTML = html
-    this.addEvent()
-  }
-
-  addEvent() {
-    const callBack = this.callBack
-    const pageNum = this.pageNum
-    const container = this.container
-    const buttons = container.getElementsByTagName('button')
-    const length = buttons.length
-    const first = buttons[0]
-    const previous = buttons[1]
-    const next = buttons[length - 2]
-    const last = buttons[length - 1]
-    let num = 0
-    container.classList.add('gra-page')
-    const reset = (target) => {
-      const select = container.getElementsByClassName('select')[0]
-      select && select.classList.remove('select')
-      target.classList.add('select')
-      callBack(target.innerText)
-    }
-    reset(buttons[2])
-    first.onclick = e => {
-      num = 1
-      for (let i = 2; i < length - 2; i++) {
-        buttons[i].innerText = num++
-      }
-      reset(buttons[2])
-    }
-    last.onclick = e => {
-      num = pageNum
-      for (let i = length - 3; i > 1; i--) {
-        buttons[i].innerText = num--
-      }
-      reset(buttons[length - 3])
-    }
-    previous.onclick = e => {
-      const select = container.getElementsByClassName('select')[0]
-      const move = () => {
-        if (select.previousElementSibling.classList.contains('page-button')) {
-          let index = +select.innerText
-          if (index > 1) {
-            index--
-            for (let i = 2; i < length - 2; i++) {
-              buttons[i].innerText = index++
-            }
-          }
-          reset(select)
-        } else {
-          reset(select.previousElementSibling)
-        }
-      }
-      select.innerText === '1' ? callBack('1') : move()
-    }
-    next.onclick = e => {
-      const select = container.getElementsByClassName('select')[0]
-      const move = () => {
-        if (select.nextElementSibling.classList.contains('page-button')) {
-          let index = +select.innerText
-          if (index < pageNum) {
-            index++
-            for (let i = length - 3; i > 1; i--) {
-              buttons[i].innerText = index--
-            }
-          }
-          reset(select)
-        } else {
-          reset(select.nextElementSibling)
-        }
-      }
-      +select.innerText === pageNum ? callBack(pageNum + '') : move()
-    }
-    container.onclick = ({target}) => target.tagName.toLowerCase() === 'button' && !target.classList.contains('page-button') && reset(target)
-  }
-}
-
-/*
-new GraPage(query('#demo'), {
-    total: 271,
-    show: 10
-}, index => console.log(index))*/

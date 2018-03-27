@@ -12,4 +12,4 @@
    * 优化ajax函数，更新page组件    
         
 * 2018-03-27
-   * 修复cookie操作bug，scrollEvent增加自定义和重复触发功能
+  * 修复cookie操作bug，scrollEvent增加自定义和重复触发功能

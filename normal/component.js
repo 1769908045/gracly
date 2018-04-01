@@ -100,4 +100,91 @@ class GraPage {
   }
 }
 
-// new GraPage(query('#demo'), {total: 100, show: 11, first: '最前', last: '最后', previous: '<', next: '>'}, value => console.log(value))
+/*new GraPage(query('#demo'), {
+  total: 100,
+  show: 11,
+  first: '最前',
+  last: '最后',
+  previous: '<',
+  next: '>'
+}, value => console.log(value))*/
+
+class GraRoute {
+  constructor(routes, hash = true) {
+    this.routes = routes
+    this.hash = hash
+    this.init()
+    this.event()
+  }
+
+  searchRoute(url) {
+    const routes = this.routes
+    let result = false
+
+    for (let i = 0, len = routes.length; i < len; i++) {
+      if (routes[i].url === url) {
+        result = routes[i]
+        break;
+      }
+    }
+    return result
+  }
+
+  init() {
+    this.emit()
+  }
+
+  push(url) {
+    if (this.hash) {
+      location.hash = `#${url}`
+    } else {
+      history.pushState(null, null, url)
+      this.emit()
+    }
+  }
+
+  emit() {
+    let routeTarget = false
+    if (this.hash) {
+      if (location.hash !== '') {
+        const hash = location.hash.substr(1)
+        const searchResult = this.searchRoute(hash)
+        if (hash !== '' && searchResult) {
+          routeTarget = searchResult
+        }
+      } else {
+        location.hash = '#/'
+      }
+    } else {
+      const pathname = location.pathname
+      const searchResult = this.searchRoute(pathname)
+      if (pathname !== '' && searchResult) {
+        routeTarget = searchResult
+      }
+    }
+    routeTarget && (routeTarget.state ? routeTarget.callBack(routeTarget.state) : routeTarget.callBack())
+  }
+
+  event() {
+    window.onpopstate = e => this.emit()
+  }
+}
+
+/*
+const route = new GraRoute([
+  {
+    url: '/',
+    state: {age: 32},
+    callBack: state => {
+      console.log(state.age)
+    }
+  },
+  {
+    url: '/start',
+    state: {age: 988},
+    callBack: state => {
+      console.log(state.age)
+    }
+  }
+], false)
+route.push('/')*/

@@ -11,7 +11,7 @@ export class GraPage {
     const container = this.container
     const data = this.data
     const pageNum = this.pageNum
-    container.innerHTML = "";
+    container.innerHTML = ''
     const first = data.first ? data.first : '首页'
     const last = data.last ? data.last : '末页'
     const previous = data.previous ? data.previous : '上一页'
@@ -115,7 +115,7 @@ export class GraRoute {
     for (let i = 0, len = routes.length; i < len; i++) {
       if (routes[i].url === url) {
         result = routes[i]
-        break;
+        break
       }
     }
     return result

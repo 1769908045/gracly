@@ -78,16 +78,17 @@ export const ajax = o => {
   }
 }
 export const createHash = input => {
-  const base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-'.split('');
+  const base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-'.split('')
   let hash = 5381
   let i = input.length - 1
   if (typeof input === 'string') {
-    for (; i > -1; i--)
+    for (; i > -1; i--) {
       hash += (hash << 5) + input.charCodeAt(i)
-  }
-  else {
-    for (; i > -1; i--)
-      hash += (hash << 5) + input[i];
+    }
+  } else {
+    for (; i > -1; i--) {
+      hash += (hash << 5) + input[i]
+    }
   }
   let value = hash & 0x7FFFFFFF
   let retValue = ''
@@ -99,15 +100,15 @@ export const createHash = input => {
   return retValue
 }
 export const matchHtml = (tagName, html) => {
-  const regStr = '<' + tagName + '>[\\s\\S]*<\/' + tagName + '>';
-  let targetStr = html.match(new RegExp(regStr))[0];
-  const start = targetStr.search('>');
-  const end = targetStr.search('</' + tagName + '>');
-  return targetStr.substring(start + 1, end);
+  const regStr = '<' + tagName + '>[\\s\\S]*<\/' + tagName + '>'
+  let targetStr = html.match(new RegExp(regStr))[0]
+  const start = targetStr.search('>')
+  const end = targetStr.search('</' + tagName + '>')
+  return targetStr.substring(start + 1, end)
 }
 export const checkDevice = () => navigator.userAgent.match(/iPhone|Android|Mobile|iPad|Firefox|opr|chrome|safari|trident/i)[0]
 export const mobileDevice = () => /Android|iPhone|Mobile|iPad/i.test(checkDevice())
-export const mobileInput = () => mobileDevice && for_(querys('input'), i => i.onfocus = e => window.scrollTo(0, e.target.offsetTop - (document.documentElement.clientHeight / 3) + 50))
+export const mobileInput = () => mobileDevice() && for_(querys('input'), i => i.onfocus = e => window.scrollTo(0, e.target.offsetTop - (document.documentElement.clientHeight / 3) + 50))
 export const cookie = {
   set: (name, value, expires, path = '/') => {
     if (typeof expires !== 'number') {
@@ -140,19 +141,21 @@ export const scrollEvent = (obj, endback) => {
         if (endTop >= i.top) {
           i.down.callback()
           i.down.tag = false
-        } else
+        } else {
           i.down.tag = true
+        }
       }
       if (i.up.callback && typeof i.up.callback === 'function') {
         if (endTop <= i.top) {
           i.up.callback()
           i.up.tag = false
-        } else
+        } else {
           i.up.tag = true
+        }
       }
     }
   })
-  if (mobileDevice) {
+  if (mobileDevice()) {
     document.body.addEventListener('touchmove', e => {
       const scrollTop = document.documentElement.scrollTop || document.body.scrollTop
       if (scrollTop > endTop) {

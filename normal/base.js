@@ -106,7 +106,7 @@ const matchHtml = (tagName, html) => {
   return targetStr.substring(start + 1, end);
 }
 const checkDevice = () => navigator.userAgent.match(/iPhone|Android|Mobile|iPad|Firefox|opr|chrome|safari|trident/i)[0]
-const mobileDevice = /Android|iPhone|Mobile|iPad/i.test(checkDevice())
+const mobileDevice = () => /Android|iPhone|Mobile|iPad/i.test(checkDevice())
 const mobileInput = () => mobileDevice && for_(querys('input'), i => i.onfocus = e => window.scrollTo(0, e.target.offsetTop - (document.documentElement.clientHeight / 3) + 50))
 const cookie = {
   set: (name, value, expires, path = '/') => {

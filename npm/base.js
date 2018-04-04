@@ -3,7 +3,7 @@ export const for_ = (list, fun) => {
 }
 export const currying_ = (fun, initFun) => {
   return (...initArgs) => {
-    let result = typeof initFun === "function" ? initFun(initArgs[0]) : initArgs[0]
+    let result = typeof initFun === 'function' ? initFun(initArgs[0]) : initArgs[0]
     initArgs.length > 1 && for_(initArgs.slice(1), i => result = fun(result, i))
     const back = (...args) => {
       if (args.length > 0) {
@@ -21,18 +21,18 @@ export const getIndex = str => {
   return indexStr ? parseInt(indexStr[0].match(/\d+/)[0]) : 0
 }
 export const elFun = (a, b) => {
-  if (b.substr(0, 1) === "#") {
+  if (b.substr(0, 1) === '#') {
     return document.getElementById(b.substr(1))
-  } else if (b.substr(0, 1) === ".") {
+  } else if (b.substr(0, 1) === '.') {
     return a.getElementsByClassName(b.substr(1).replace(/\[\d+]/g, ''))[getIndex(b)]
   } else {
     return a.getElementsByTagName(b.replace(/\[\d+]/g, ''))[getIndex(b)]
   }
 }
 export const elInit = a => {
-  if (a.substr(0, 1) === "#") {
+  if (a.substr(0, 1) === '#') {
     return document.getElementById(a.substr(1))
-  } else if (a.substr(0, 1) === ".") {
+  } else if (a.substr(0, 1) === '.') {
     return document.getElementsByClassName(a.substr(1).replace(/\[\d+]/g, ''))[getIndex(a)]
   } else {
     return document.getElementsByTagName(a.replace(/\[\d+]/g, ''))[getIndex(a)]
@@ -46,18 +46,18 @@ export const query = queryStr => {
   return get()
 }
 export const querys = queryStr => {
-  if (queryStr.substr(0, 1) === "#") {
+  if (queryStr.substr(0, 1) === '#') {
     return document.getElementById(queryStr.substr(1))
-  } else if (queryStr.substr(0, 1) === ".") {
+  } else if (queryStr.substr(0, 1) === '.') {
     return document.getElementsByClassName(queryStr.substr(1))
   } else {
     return document.getElementsByTagName(queryStr)
   }
 }
 export const jsonToUrl = obj => {
-  let data = ""
+  let data = ''
   for (let k in obj) {
-    data += k + "=" + obj[k] + "&"
+    data += k + '=' + obj[k] + '&'
   }
   return data.substr(0, data.length - 1)
 }
@@ -65,13 +65,13 @@ export const ajax = o => {
   const method = o.method.toUpperCase()
   const url = o.url
   const async = o.async === false ? o.async : true
-  const xhr = new XMLHttpRequest() || new ActiveXObject("Microsoft.XMLHTTP")
-  xhr.onreadystatechange = e => (xhr.readyState === 4 && xhr.status === 200) && (typeof o.success === "function") && (o.success(xhr.response))
-  typeof o.process === "function" && (xhr.upload.onprogress = e => e.lengthComputable && o.process(Math.floor(e.loaded / e.total * 100), e.loaded))
-  method === "GET" && ((o.data === undefined ? xhr.open(method, url, async) : xhr.open(method, url + "?" + jsonToUrl(o.data), async)) || xhr.send())
-  if (method === "POST") {
+  const xhr = new XMLHttpRequest() || new ActiveXObject('Microsoft.XMLHTTP')
+  xhr.onreadystatechange = e => (xhr.readyState === 4 && xhr.status === 200) && (typeof o.success === 'function') && (o.success(xhr.response))
+  typeof o.process === 'function' && (xhr.upload.onprogress = e => e.lengthComputable && o.process(Math.floor(e.loaded / e.total * 100), e.loaded))
+  method === 'GET' && ((o.data === undefined ? xhr.open(method, url, async) : xhr.open(method, url + '?' + jsonToUrl(o.data), async)) || xhr.send())
+  if (method === 'POST') {
     if (!o.formData) {
-      xhr.open(method, url, async) || xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded") || o.data ? xhr.send(jsonToUrl(o.data)) : xhr.send()
+      xhr.open(method, url, async) || xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded') || o.data ? xhr.send(jsonToUrl(o.data)) : xhr.send()
     } else {
       xhr.open(method, url, async) || xhr.send(o.formData)
     }
@@ -99,15 +99,15 @@ export const createHash = input => {
   return retValue
 }
 export const matchHtml = (tagName, html) => {
-  const regStr = "<" + tagName + ">[\\s\\S]*<\/" + tagName + ">";
+  const regStr = '<' + tagName + '>[\\s\\S]*<\/' + tagName + '>';
   let targetStr = html.match(new RegExp(regStr))[0];
-  const start = targetStr.search(">");
-  const end = targetStr.search("</" + tagName + ">");
+  const start = targetStr.search('>');
+  const end = targetStr.search('</' + tagName + '>');
   return targetStr.substring(start + 1, end);
 }
 export const checkDevice = () => navigator.userAgent.match(/iPhone|Android|Mobile|iPad|Firefox|opr|chrome|safari|trident/i)[0]
-export const mobileDevice = /Android|iPhone|Mobile|iPad/i.test(checkDevice())
-export const mobileInput = () => mobileDevice && for_(querys("input"), i => i.onfocus = e => window.scrollTo(0, e.target.offsetTop - (document.documentElement.clientHeight / 3) + 50))
+export const mobileDevice = () => /Android|iPhone|Mobile|iPad/i.test(checkDevice())
+export const mobileInput = () => mobileDevice && for_(querys('input'), i => i.onfocus = e => window.scrollTo(0, e.target.offsetTop - (document.documentElement.clientHeight / 3) + 50))
 export const cookie = {
   set: (name, value, expires, path = '/') => {
     if (typeof expires !== 'number') {
@@ -208,6 +208,6 @@ export const scrollEvent = (obj, endback) => {
 }
 export const checkWebp = (callback) => {
   const webp = new Image()
-  webp.src = "data:image/webp;base64,UklGRiYAAABXRUJQVlA4IBoAAAAwAQCdASoBAAEAAIAMJaQAA3AA/v89WAAAAA=="
+  webp.src = 'data:image/webp;base64,UklGRiYAAABXRUJQVlA4IBoAAAAwAQCdASoBAAEAAIAMJaQAA3AA/v89WAAAAA=='
   webp.onload = () => webp.width && callback()
 }

@@ -94,7 +94,7 @@ export class GraPage {
           reset(select.nextElementSibling)
         }
       }
-      +select.innerText === pageNum ? callBack(pageNum + '') : move()
+      parseInt(select.innerText) === pageNum ? callBack(pageNum + '') : move()
     }
     container.onclick = ({target}) => target.tagName.toLowerCase() === 'button' && !target.classList.contains('page-button') && reset(target)
   }

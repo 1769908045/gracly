@@ -1,57 +1,21 @@
-const for_ = (list, fun) => {
-  for (let i = 0, len = list.length; i < len; i++) fun(list[i], i)
-}
+/* envVariable */
+const checkDevice = (() => navigator.userAgent.match(/iPhone|Android|Mobile|iPad|Firefox|opr|chrome|safari|trident/i)[0])()
+const isMobile = (() => /Android|iPhone|Mobile|iPad/i.test(checkDevice))()
+
+/* base */
 const currying_ = (fun, initFun) => {
   return (...initArgs) => {
     let result = typeof initFun === 'function' ? initFun(initArgs[0]) : initArgs[0]
-    initArgs.length > 1 && for_(initArgs.slice(1), i => result = fun(result, i))
+    initArgs.length > 1 && initArgs.slice(1).forEach(i => result = fun(result, i))
     const back = (...args) => {
       if (args.length > 0) {
-        for_(args, i => result = fun(result, i))
+        args.forEach(i => result = fun(result, i))
         return back
       } else {
         return result
       }
     }
     return back
-  }
-}
-const getIndex = str => {
-  let indexStr = str.match(/\[\d+]/)
-  return indexStr ? parseInt(indexStr[0].match(/\d+/)[0]) : 0
-}
-const elFun = (a, b) => {
-  if (b.substr(0, 1) === '#') {
-    return document.getElementById(b.substr(1))
-  } else if (b.substr(0, 1) === '.') {
-    return a.getElementsByClassName(b.substr(1).replace(/\[\d+]/g, ''))[getIndex(b)]
-  } else {
-    return a.getElementsByTagName(b.replace(/\[\d+]/g, ''))[getIndex(b)]
-  }
-}
-const elInit = a => {
-  if (a.substr(0, 1) === '#') {
-    return document.getElementById(a.substr(1))
-  } else if (a.substr(0, 1) === '.') {
-    return document.getElementsByClassName(a.substr(1).replace(/\[\d+]/g, ''))[getIndex(a)]
-  } else {
-    return document.getElementsByTagName(a.replace(/\[\d+]/g, ''))[getIndex(a)]
-  }
-}
-const getElement = currying_(elFun, elInit)
-const query = queryStr => {
-  const args = queryStr.split(' ')
-  let get = null
-  for_(args, (i, k) => k === 0 && (get = getElement(i)) || get(i))
-  return get()
-}
-const querys = queryStr => {
-  if (queryStr.substr(0, 1) === '#') {
-    return document.getElementById(queryStr.substr(1))
-  } else if (queryStr.substr(0, 1) === '.') {
-    return document.getElementsByClassName(queryStr.substr(1))
-  } else {
-    return document.getElementsByTagName(queryStr)
   }
 }
 const jsonToUrl = obj => {
@@ -106,9 +70,7 @@ const matchHtml = (tagName, html) => {
   const end = targetStr.search('</' + tagName + '>')
   return targetStr.substring(start + 1, end)
 }
-const checkDevice = () => navigator.userAgent.match(/iPhone|Android|Mobile|iPad|Firefox|opr|chrome|safari|trident/i)[0]
-const mobileDevice = () => /Android|iPhone|Mobile|iPad/i.test(checkDevice())
-const mobileInput = () => mobileDevice() && for_(querys('input'), i => i.onfocus = e => window.scrollTo(0, e.target.offsetTop - (document.documentElement.clientHeight / 3) + 50))
+const mobileInput = () => isMobile && [].forEach.call(querys('input'), i => i.onfocus = e => window.scrollTo(0, e.target.offsetTop - (document.documentElement.clientHeight / 3) + 50))
 const cookie = {
   set: (name, value, expires, path = '/') => {
     if (typeof expires !== 'number') {
@@ -135,11 +97,11 @@ const cookie = {
 const scrollEvent = (obj, endback) => {
   let endTop = document.documentElement.scrollTop || document.body.scrollTop
   const isDown = top => top > endTop
-  for_(obj, i => {
+  Array.prototype.forEach.call(obj, i => {
     if (typeof i.top === 'number') {
       if (i.down.callback && typeof i.down.callback === 'function') {
         if (endTop >= i.top) {
-          i.down.callback()
+          i.down.init && i.down.callback()
           i.down.tag = false
         } else {
           i.down.tag = true
@@ -147,7 +109,7 @@ const scrollEvent = (obj, endback) => {
       }
       if (i.up.callback && typeof i.up.callback === 'function') {
         if (endTop <= i.top) {
-          i.up.callback()
+          i.up.init && i.up.callback()
           i.up.tag = false
         } else {
           i.up.tag = true
@@ -155,11 +117,11 @@ const scrollEvent = (obj, endback) => {
       }
     }
   })
-  if (mobileDevice()) {
+  if (isMobile) {
     document.body.addEventListener('touchmove', e => {
       const scrollTop = document.documentElement.scrollTop || document.body.scrollTop
       if (scrollTop > endTop) {
-        for_(obj, k => {
+        Array.prototype.forEach.call(obj, k => {
           if (scrollTop >= k.top && k.tag) {
             k['fun']()
             k.tag = false
@@ -173,7 +135,7 @@ const scrollEvent = (obj, endback) => {
       const observe = () => {
         const scrollTop = document.documentElement.scrollTop || document.body.scrollTop
         if (scrollTop > endTop) {
-          for_(obj, k => {
+          Array.prototype.forEach.call(obj, k => {
             if (scrollTop >= k.top && k.tag) {
               k['fun']()
               k.tag = false
@@ -189,18 +151,22 @@ const scrollEvent = (obj, endback) => {
   } else {
     document.body.onscroll = e => {
       const scrollTop = document.documentElement.scrollTop || document.body.scrollTop
-      for_(obj, k => {
+      Array.prototype.forEach.call(obj, k => {
         if (isDown(scrollTop)) {
-          if (typeof k.top === 'number' && k.down.callback && typeof k.down.callback === 'function' && k.down.tag && scrollTop >= k.top) {
-            k.down.callback()
-            k.down.tag = false
-            k.up.repeat && (k.up.tag = true)
+          if (scrollTop >= k.top) {
+            !k.up.tag && k.up.repeat && (k.up.tag = true)
+            if (k.down.tag && typeof k.top === 'number' && k.down.callback && typeof k.down.callback === 'function') {
+              k.down.callback()
+              k.down.tag = false
+            }
           }
         } else {
-          if (typeof k.top === 'number' && k.up.callback && typeof k.up.callback === 'function' && k.up.tag && scrollTop <= k.top) {
-            k.up.callback()
-            k.up.tag = false
-            k.down.repeat && (k.down.tag = true)
+          if (scrollTop <= k.top) {
+            !k.down.tag && k.down.repeat && (k.down.tag = true)
+            if (k.up.tag && typeof k.top === 'number' && k.up.callback && typeof k.up.callback === 'function') {
+              k.up.callback()
+              k.up.tag = false
+            }
           }
         }
       })
@@ -213,4 +179,45 @@ const checkWebp = (callback) => {
   const webp = new Image()
   webp.src = 'data:image/webp;base64,UklGRiYAAABXRUJQVlA4IBoAAAAwAQCdASoBAAEAAIAMJaQAA3AA/v89WAAAAA=='
   webp.onload = () => webp.width && callback()
+}
+
+/* extend*/
+
+const getIndex = str => {
+  let indexStr = str.match(/\[\d+]/)
+  return indexStr ? parseInt(indexStr[0].match(/\d+/)[0]) : 0
+}
+const elFun = (a, b) => {
+  if (b.substr(0, 1) === '#') {
+    return document.getElementById(b.substr(1))
+  } else if (b.substr(0, 1) === '.') {
+    return a.getElementsByClassName(b.substr(1).replace(/\[\d+]/g, ''))[getIndex(b)]
+  } else {
+    return a.getElementsByTagName(b.replace(/\[\d+]/g, ''))[getIndex(b)]
+  }
+}
+const elInit = a => {
+  if (a.substr(0, 1) === '#') {
+    return document.getElementById(a.substr(1))
+  } else if (a.substr(0, 1) === '.') {
+    return document.getElementsByClassName(a.substr(1).replace(/\[\d+]/g, ''))[getIndex(a)]
+  } else {
+    return document.getElementsByTagName(a.replace(/\[\d+]/g, ''))[getIndex(a)]
+  }
+}
+const getElement = currying_(elFun, elInit)
+const query = queryStr => {
+  const args = queryStr.split(' ')
+  let get = null
+  args.forEach((i, k) => k === 0 && (get = getElement(i)) || get(i))
+  return get()
+}
+const querys = queryStr => {
+  if (queryStr.substr(0, 1) === '#') {
+    return document.getElementById(queryStr.substr(1))
+  } else if (queryStr.substr(0, 1) === '.') {
+    return document.getElementsByClassName(queryStr.substr(1))
+  } else {
+    return document.getElementsByTagName(queryStr)
+  }
 }

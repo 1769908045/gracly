@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script src="dist/base.js"></script>
+</head>
+<body>
+<div>
+  <div class="ok">
+    <button></button>
+  </div>
+  <div class="ok" style="height: 15000px">
+    <button></button>
+  </div>
+</div>
+<script>
+  scrollEvent([
+    {
+      top: 1030,
+      up: {callback: () => console.log('up1030'), repeat: true},
+      down: {callback: () => console.log('down1030'), repeat: true}
+    },
+    {
+      top: 2030,
+      up: {callback: () => console.log('up2030'), repeat: true, init: true},
+      down: {callback: () => console.log('down2030'), repeat: true}
+    }
+  ], () => console.log('ok'))
+</script>
+</body>
+</html>
